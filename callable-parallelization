@@ -1,0 +1,32 @@
+Callable Example:
+
+List<Callable<List<String>>> callables = new ArrayList<>();
+
+        for (int i = 0; i < subLists.size(); i++) {
+            int finalI = i;
+            callables.add(() -> {
+                List<String> failed = callApi(subLists.get(finalI));
+                return failed;
+            });
+        }
+
+        try {
+            allFailed = executor.invokeAll(callables)
+                    .stream()
+                    .map(future -> {
+                        try {
+                            return future.get();
+                        }
+                        catch (Exception e) {
+                            throw new IllegalStateException(e);
+                        }
+                    })
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+Promise.all Example:
+
